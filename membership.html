@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Membership - CLIQ BOOK | Unlimited Access to Premium eBooks</title>
+    <meta name="description" content="Unlock unlimited access to our premium eBook library. Choose from flexible membership plans starting with a 7-day free trial.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1a2332;
+            --secondary: #f4a261;
+            --background: #fefefe;
+            --text: #2d3748;
+            --success: #2d5a3d;
+            --warning: #d69e2e;
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--secondary), #e76f51);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('resources/hero-bg.jpg') center/cover;
+            opacity: 0.2;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .pricing-card {
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .pricing-card.featured {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 1);
+            border: 3px solid var(--secondary);
+        }
+        
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-8px);
+        }
+        
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--success);
+        }
+        
+        .testimonial-card {
+            transition: all 0.3s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+        
+        .faq-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .faq-content.open {
+            max-height: 200px;
+        }
+        
+        .stats-counter {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--secondary);
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .pricing-card.featured {
+                transform: none;
+            }
+            
+            .pricing-card.featured:hover {
+                transform: translateY(-8px);
+            }
+            
+            .stats-counter {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-display font-bold text-gray-800">
+                            <a href="index.html"><span class="gradient-text">CLIQ</span> BOOK</a>
+                        </h1>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                        <a href="library.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Library</a>
+                        <a href="membership.html" class="text-gray-800 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Membership</a>
+
+                    </div>
+                </div>
+                
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <button id="loginBtn" onclick="window.location.href='login.html'" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Login
+                    </button>
+                    
+                    <div id="userMenu" class="hidden items-center space-x-3">
+                        <img id="userAvatar" src="https://via.placeholder.com/150" alt="User" 
+                             class="w-8 h-8 rounded-full object-cover">
+                        <span id="userName" class="text-sm font-medium text-gray-700"></span>
+                        <button id="logoutBtn" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="md:hidden p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-bg pt-16 pb-20">
+        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center text-white">
+                <h1 class="text-5xl md:text-6xl font-display font-bold mb-6">
+                    Unlock <span class="text-yellow-400">Premium</span> Reading
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
+                    Get unlimited access to our entire library of premium eBooks. 
+                    Start your journey with a 7-day free trial.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-12">
+                    <div class="text-center">
+                        <div class="stats-counter text-white" data-count="10000">0</div>
+                        <p class="text-white opacity-90">Premium Books</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="stats-counter text-white" data-count="50000">0</div>
+                        <p class="text-white opacity-90">Happy Members</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="stats-counter text-white" data-count="1000000">0</div>
+                        <p class="text-white opacity-90">Books Read</p>
+                    </div>
+                </div>
+                
+                <button onclick="scrollToPricing()" 
+                        class="bg-yellow-500 text-black px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-400 transition-all transform hover:scale-105 shadow-lg">
+                    Choose Your Plan
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Premium -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold text-gray-800 mb-6">
+                    Why Choose <span class="gradient-text">Premium?</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Experience reading like never before with our premium features designed for passionate readers.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center reveal">
+                    <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <svg class="feature-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Unlimited Access</h3>
+                    <p class="text-gray-600">Read any book, anytime, anywhere without restrictions.</p>
+                </div>
+                
+                <div class="text-center reveal">
+                    <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <svg class="feature-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Offline Reading</h3>
+                    <p class="text-gray-600">Download books and read without internet connection.</p>
+                </div>
+                
+                <div class="text-center reveal">
+                    <div class="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <svg class="feature-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Ad-Free Experience</h3>
+                    <p class="text-gray-600">Enjoy uninterrupted reading without advertisements.</p>
+                </div>
+                
+                <div class="text-center reveal">
+                    <div class="bg-red-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <svg class="feature-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Priority Support</h3>
+                    <p class="text-gray-600">Get fast, personalized help from our expert support team.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Plans -->
+    <section id="pricing" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold text-gray-800 mb-6">
+                    Choose Your <span class="gradient-text">Plan</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Flexible pricing options designed to fit your reading needs and budget.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Free Plan -->
+                <div class="pricing-card rounded-lg shadow-lg p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Free</h3>
+                        <p class="text-gray-600 mb-4">Perfect for getting started</p>
+                        <div class="text-4xl font-bold text-gray-800 mb-2">$0</div>
+                        <p class="text-gray-500">Forever</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Access to free books</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Limited previews</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Basic search</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Community features</span>
+                        </li>
+                    </ul>
+                    
+                    <button onclick="window.location.href='library.html'" 
+                            class="w-full bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                        Get Started Free
+                    </button>
+                </div>
+                
+                <!-- Monthly Premium -->
+                <div class="pricing-card featured rounded-lg shadow-lg p-8 relative">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm font-bold">POPULAR</span>
+                    </div>
+                    
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Premium Monthly</h3>
+                        <p class="text-gray-600 mb-4">Perfect for avid readers</p>
+                        <div class="text-4xl font-bold text-gray-800 mb-2">$9.99</div>
+                        <p class="text-gray-500">per month</p>
+                        <p class="text-sm text-green-600 mt-2">✓ 7-day free trial</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Unlimited access to all books</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Offline reading</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Ad-free experience</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Priority support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Advanced search & filters</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Reading progress sync</span>
+                        </li>
+                    </ul>
+                    
+                    <button onclick="selectPlan('monthly')" 
+                            class="w-full bg-yellow-500 text-black py-3 px-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors">
+                        Start Free Trial
+                    </button>
+                </div>
+                
+                <!-- Annual Premium -->
+                <div class="pricing-card rounded-lg shadow-lg p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Premium Annual</h3>
+                        <p class="text-gray-600 mb-4">Best value for regular readers</p>
+                        <div class="text-4xl font-bold text-gray-800 mb-2">$89.99</div>
+                        <p class="text-gray-500">per year</p>
+                        <p class="text-sm text-green-600 mt-2">✓ Save 25% vs monthly</p>
+                        <p class="text-sm text-green-600">✓ 7-day free trial</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">All monthly premium features</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">25% savings compared to monthly</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Exclusive member perks</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Early access to new releases</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="feature-icon mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-gray-700">Priority customer support</span>
+                        </li>
+                    </ul>
+                    
+                    <button onclick="selectPlan('annual')" 
+                            class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Start Free Trial
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold text-gray-800 mb-6">
+                    What Our <span class="gradient-text">Members Say</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Join thousands of satisfied readers who have transformed their reading experience.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="testimonial-card bg-gray-50 rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <img src="https://ui-avatars.com/api/?name=Sarah+Johnson&background=random" alt="Sarah Johnson" 
+                             class="w-12 h-12 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-bold text-gray-800">Sarah Johnson</h4>
+                            <p class="text-gray-600 text-sm">Marketing Manager</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">
+                        "CLIQ BOOK has completely transformed my reading habits. The unlimited access to premium books 
+                        and offline reading feature are game-changers for my daily commute."
+                    </p>
+                    <div class="text-yellow-400">★★★★★</div>
+                </div>
+                
+                <div class="testimonial-card bg-gray-50 rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <img src="https://ui-avatars.com/api/?name=Michael+Chen&background=random" alt="Michael Chen" 
+                             class="w-12 h-12 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-bold text-gray-800">Michael Chen</h4>
+                            <p class="text-gray-600 text-sm">Software Engineer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">
+                        "As someone who reads 3-4 books a month, the annual plan pays for itself. The quality of books 
+                        and the reading experience are exceptional. Highly recommended!"
+                    </p>
+                    <div class="text-yellow-400">★★★★★</div>
+                </div>
+                
+                <div class="testimonial-card bg-gray-50 rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <img src="https://ui-avatars.com/api/?name=Emily+Davis&background=random" alt="Emily Davis" 
+                             class="w-12 h-12 rounded-full object-cover mr-4">
+                        <div>
+                            <h4 class="font-bold text-gray-800">Emily Davis</h4>
+                            <p class="text-gray-600 text-sm">Entrepreneur</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">
+                        "The business and self-help book collection is incredible. I've implemented so many ideas from 
+                        the books I've read here. It's like having a personal library of success."
+                    </p>
+                    <div class="text-yellow-400">★★★★★</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold text-gray-800 mb-6">
+                    Frequently Asked <span class="gradient-text">Questions</span>
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Everything you need to know about CLIQ BOOK premium membership.
+                </p>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="faq-item bg-white rounded-lg shadow-md">
+                    <button onclick="toggleFAQ(0)" class="w-full text-left p-6 focus:outline-none">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-800">What is included in the premium membership?</h3>
+                            <svg class="faq-icon w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content px-6 pb-6">
+                        <p class="text-gray-600">Premium membership includes unlimited access to all books in our library, offline reading capabilities, an ad-free experience, priority customer support, and advanced search features.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item bg-white rounded-lg shadow-md">
+                    <button onclick="toggleFAQ(1)" class="w-full text-left p-6 focus:outline-none">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-800">Can I cancel my subscription anytime?</h3>
+                            <svg class="faq-icon w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content px-6 pb-6">
+                        <p class="text-gray-600">Yes, you can cancel your subscription at any time. You'll continue to have access to premium features until the end of your current billing period.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item bg-white rounded-lg shadow-md">
+                    <button onclick="toggleFAQ(2)" class="w-full text-left p-6 focus:outline-none">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-800">How does the 7-day free trial work?</h3>
+                            <svg class="faq-icon w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content px-6 pb-6">
+                        <p class="text-gray-600">The 7-day free trial gives you full access to all premium features. You won't be charged until the trial ends, and you can cancel anytime during the trial period.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item bg-white rounded-lg shadow-md">
+                    <button onclick="toggleFAQ(3)" class="w-full text-left p-6 focus:outline-none">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-800">Can I download books for offline reading?</h3>
+                            <svg class="faq-icon w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content px-6 pb-6">
+                        <p class="text-gray-600">Yes, premium members can download books for offline reading on up to 5 devices. This feature is perfect for reading when you don't have internet access.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item bg-white rounded-lg shadow-md">
+                    <button onclick="toggleFAQ(4)" class="w-full text-left p-6 focus:outline-none">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-800">What payment methods do you accept?</h3>
+                            <svg class="faq-icon w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content px-6 pb-6">
+                        <p class="text-gray-600">We accept all major credit cards, PayPal, and other popular payment methods. All payments are processed securely through our payment partners.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-blue-600 to-purple-700">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="reveal">
+                <h2 class="text-4xl md:text-5xl font-display font-bold text-white mb-6">
+                    Ready to Transform Your Reading?
+                </h2>
+                <p class="text-xl text-white opacity-90 mb-8 max-w-2xl mx-auto">
+                    Join thousands of readers who have already discovered the joy of unlimited access to premium books. 
+                    Start your free trial today.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button onclick="selectPlan('monthly')" 
+                            class="bg-yellow-500 text-black px-8 py-4 rounded-lg text-lg font-semibold hover:bg-yellow-400 transition-all transform hover:scale-105 shadow-lg">
+                        Start 7-Day Free Trial
+                    </button>
+                    <button onclick="window.location.href='library.html'" 
+                            class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-gray-800 transition-all transform hover:scale-105">
+                        Browse Books First
+                    </button>
+                </div>
+                
+                <p class="text-white opacity-75 text-sm mt-6">
+                    No commitment • Cancel anytime • Full access during trial
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-display font-bold mb-2">
+                        <span class="gradient-text">CLIQ</span> BOOK
+                    </h3>
+                    <p class="text-gray-400">Made by CLIQSER</p>
+                </div>
+                
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    Empowering readers worldwide with access to quality literature and knowledge. 
+                    Join our community of passionate learners and discover your next favorite book.
+                </p>
+                
+                <div class="border-t border-gray-700 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2024 CLIQ BOOK by CLIQSER. All rights reserved. | Read. Learn. Grow.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+    
+    <script>
+        // Membership page specific functionality
+        function initMembershipPage() {
+            // Initialize scroll animations
+            initScrollAnimations();
+            
+            // Initialize stats counter
+            initStatsCounter();
+        }
+        
+        function initScrollAnimations() {
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            revealElements.forEach(el => revealObserver.observe(el));
+        }
+        
+        function initStatsCounter() {
+            const counters = document.querySelectorAll('.stats-counter');
+            
+            const countUp = (element, target) => {
+                let current = 0;
+                const increment = target / 100;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    element.textContent = Math.floor(current).toLocaleString();
+                }, 20);
+            };
+            
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = parseInt(entry.target.dataset.count);
+                        countUp(entry.target, target);
+                        counterObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            counters.forEach(counter => counterObserver.observe(counter));
+        }
+        
+        function scrollToPricing() {
+            document.getElementById('pricing').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+        
+        function selectPlan(planType) {
+            if (!AppState.currentUser) {
+                // Redirect to login if not authenticated
+                Utils.showNotification('Please login to subscribe', 'info');
+                setTimeout(() => {
+                    window.location.href = `login.html?redirect=membership&plan=${planType}`;
+                }, 2000);
+                return;
+            }
+            
+            // Mock subscription process
+            showSubscriptionModal(planType);
+        }
+        
+        function showSubscriptionModal(planType) {
+            const planDetails = {
+                monthly: { name: 'Premium Monthly', price: '$9.99', period: 'month' },
+                annual: { name: 'Premium Annual', price: '$89.99', period: 'year' }
+            };
+            
+            const plan = planDetails[planType];
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg max-w-md w-full p-6">
+                    <div class="text-center mb-6">
+                        <div class="text-6xl mb-4">🎉</div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Start Your Free Trial</h3>
+                        <p class="text-gray-600">You're about to subscribe to ${plan.name}</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-600">Plan:</span>
+                            <span class="font-semibold">${plan.name}</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-gray-600">Price:</span>
+                            <span class="font-semibold">${plan.price}/${plan.period}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Trial:</span>
+                            <span class="font-semibold text-green-600">7 days free</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 mb-6">
+                        <button onclick="processSubscription('${planType}')" 
+                                class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                            Start 7-Day Free Trial
+                        </button>
+                        <button onclick="this.closest('.fixed').remove()" 
+                                class="w-full bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                            Cancel
+                        </button>
+                    </div>
+                    
+                    <p class="text-xs text-gray-500 text-center">
+                        You can cancel anytime during the trial period. No charges until trial ends.
+                    </p>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close on backdrop click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+        
+        function processSubscription(planType) {
+            // Mock subscription process
+            Utils.showNotification('Processing subscription...', 'info');
+            
+            setTimeout(() => {
+                // Update user membership
+                AppState.currentUser.membership = 'premium';
+                AppState.currentUser.subscriptionStart = new Date().toISOString();
+                AppState.currentUser.subscriptionEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+                AppState.currentUser.planType = planType;
+                
+                // Update localStorage
+                localStorage.setItem('cliqbook_user', JSON.stringify(AppState.currentUser));
+                
+                // Close modal
+                document.querySelector('.fixed.inset-0').remove();
+                
+                // Show success message
+                Utils.showNotification('Subscription successful! Welcome to Premium!', 'success');
+                
+                // Update UI
+                Auth.updateUI();
+                
+                // Redirect to library after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'library.html';
+                }, 2000);
+            }, 2000);
+        }
+        
+        function toggleFAQ(index) {
+            const faqItems = document.querySelectorAll('.faq-item');
+            const currentItem = faqItems[index];
+            const content = currentItem.querySelector('.faq-content');
+            const icon = currentItem.querySelector('.faq-icon');
+            
+            // Close all other FAQs
+            faqItems.forEach((item, i) => {
+                if (i !== index) {
+                    item.querySelector('.faq-content').classList.remove('open');
+                    item.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
+                }
+            });
+            
+            // Toggle current FAQ
+            content.classList.toggle('open');
+            icon.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+        
+        // Initialize membership page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Small delay to ensure main.js is fully loaded
+            setTimeout(initMembershipPage, 100);
+        });
+    </script>
+</body>
+</html>

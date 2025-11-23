@@ -1,0 +1,137 @@
+[
+  {
+    "id": "self-help",
+    "name": "Self Help",
+    "description": "Transform your life with proven strategies for personal growth and success",
+    "color": "#f4a261",
+    "icon": "🌱",
+    "bookCount": 3,
+    "popular": true
+  },
+  {
+    "id": "business",
+    "name": "Business",
+    "description": "Master the art of entrepreneurship and corporate strategy",
+    "color": "#e76f51",
+    "icon": "💼",
+    "bookCount": 0,
+    "popular": true
+  },
+  {
+    "id": "romance",
+    "name": "Romance",
+    "description": "Explore tales of love, passion, and human connection",
+    "color": "#e63946",
+    "icon": "💕",
+    "bookCount": 0,
+    "popular": true
+  },
+  {
+    "id": "fiction",
+    "name": "Fiction",
+    "description": "Immerse yourself in imaginative stories and literary classics",
+    "color": "#2a9d8f",
+    "icon": "📚",
+    "bookCount": 6,
+    "popular": false
+  },
+  {
+    "id": "study",
+    "name": "Study",
+    "description": "Academic resources and educational guides for students",
+    "color": "#264653",
+    "icon": "🎓",
+    "bookCount": 0,
+    "popular": false
+  },
+  {
+    "id": "motivation",
+    "name": "Motivation",
+    "description": "Find inspiration and drive to achieve your goals",
+    "color": "#f77f00",
+    "icon": "🔥",
+    "bookCount": 3,
+    "popular": true
+  },
+  {
+    "id": "money",
+    "name": "Money",
+    "description": "Financial wisdom for wealth building and money management",
+    "color": "#06d6a0",
+    "icon": "💰",
+    "bookCount": 2,
+    "popular": true
+  },
+  {
+    "id": "trading",
+    "name": "Trading",
+    "description": "Master the markets with professional trading strategies",
+    "color": "#118ab2",
+    "icon": "📈",
+    "bookCount": 2,
+    "popular": false
+  },
+  {
+    "id": "technology",
+    "name": "Technology",
+    "description": "Stay ahead with the latest in tech and programming",
+    "color": "#073b4c",
+    "icon": "💻",
+    "bookCount": 4,
+    "popular": false
+  },
+  {
+    "id": "history",
+    "name": "History",
+    "description": "Explore the past, understand the present, and shape the future",
+    "color": "#a8a29e",
+    "icon": "📜",
+    "bookCount": 0,
+    "popular": false
+  },
+  {
+    "id": "biography",
+    "name": "Biography",
+    "description": "True stories of remarkable lives that inspire and educate",
+    "color": "#fcd34d",
+    "icon": "👤",
+    "bookCount": 0,
+    "popular": true
+  },
+  {
+    "id": "psychology",
+    "name": "Psychology",
+    "description": "Delve into the human mind, behavior, and cognitive processes",
+    "color": "#6d28d9",
+    "icon": "🧠",
+    "bookCount": 0,
+    "popular": false
+  },
+  {
+    "id": "strategy",
+    "name": "Strategy",
+    "description": "Timeless principles and modern approaches to effective strategy",
+    "color": "#dc2626",
+    "icon": "♟️",
+    "bookCount": 0,
+    "popular": false
+  },
+  {
+    "id": "fantasy",
+    "name": "Fantasy",
+    "description": "Journey into realms of magic and myth",
+    "color": "#8b5cf6",
+    "icon": "✨",
+    "bookCount": 0,
+    "popular": false
+  },
+  {
+    "id": "science-fiction",
+    "name": "Science Fiction",
+    "description": "Explore futuristic worlds and technological marvels",
+    "color": "#06b6d4",
+    "icon": "🚀",
+    "bookCount": 0,
+    "popular": false
+  }
+]

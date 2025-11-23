@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Library - CLIQ BOOK | Browse Our Complete Collection</title>
+    <meta name="description" content="Browse our complete collection of eBooks across all genres. Filter by category, rating, and more to find your perfect read.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1a2332;
+            --secondary: #f4a261;
+            --background: #fefefe;
+            --text: #2d3748;
+            --success: #2d5a3d;
+            --warning: #d69e2e;
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--secondary), #e76f51);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .book-card {
+            transition: all 0.3s ease;
+        }
+        
+        .book-card:hover {
+            transform: translateY(-8px) rotateY(5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .filter-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .view-toggle {
+            transition: all 0.2s ease;
+        }
+        
+        .view-toggle.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .list-view .book-card {
+            display: flex;
+            align-items: center;
+        }
+        
+        .list-view .book-card img {
+            width: 120px;
+            height: 160px;
+            object-fit: cover;
+        }
+        
+        .pagination-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .pagination-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-display font-bold text-gray-800">
+                            <a href="index.html"><span class="gradient-text">CLIQ</span> BOOK</a>
+                        </h1>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                        <a href="library.html" class="text-gray-800 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Library</a>
+                        <a href="membership.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Membership</a>
+
+                    </div>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="hidden md:block flex-1 max-w-md mx-8">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Search books, authors..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <button id="loginBtn" onclick="window.location.href='login.html'" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Login
+                    </button>
+                    
+                    <div id="userMenu" class="hidden items-center space-x-3">
+                        <img id="userAvatar" src="https://via.placeholder.com/150" alt="User" 
+                             class="w-8 h-8 rounded-full object-cover">
+                        <span id="userName" class="text-sm font-medium text-gray-700"></span>
+                        <button id="logoutBtn" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="md:hidden p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-t">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="index.html" class="block px-3 py-2 text-gray-600 hover:text-gray-800">Home</a>
+                <a href="library.html" class="block px-3 py-2 text-gray-800 font-medium">Library</a>
+                <a href="membership.html" class="block px-3 py-2 text-gray-600 hover:text-gray-800">Membership</a>
+
+            </div>
+            <div class="px-4 pb-3">
+                <input type="text" id="mobileSearchInput" placeholder="Search books..." 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="bg-gradient-to-r from-blue-600 to-purple-700 pt-20 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-white">
+                <h1 class="text-4xl md:text-5xl font-display font-bold mb-4">
+                    Book <span class="text-yellow-400">Library</span>
+                </h1>
+                <p class="text-xl opacity-90 max-w-2xl mx-auto">
+                    Discover your next favorite book from our extensive collection of premium eBooks
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Filter Sidebar -->
+            <div class="lg:w-1/4">
+                <div class="filter-sidebar sticky top-24 rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Filters</h3>
+                    
+                    <!-- Category Filter -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-gray-700 mb-3">Category</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="category" value="all" checked 
+                                       class="mr-2 text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm">All Categories</span>
+                            </label>
+                            <div id="categoryFilters">
+                                <!-- Category filters will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rating Filter -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-gray-700 mb-3">Minimum Rating</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="rating" value="0" checked 
+                                       class="mr-2 text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm">All Ratings</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="rating" value="4" 
+                                       class="mr-2 text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm">4+ Stars</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="rating" value="4.5" 
+                                       class="mr-2 text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm">4.5+ Stars</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Access Level Filter -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-gray-700 mb-3">Access Type</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="accessLevel" value="all" checked 
+                                       class="mr-2 text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm">All Books</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="accessLevel" value="free" 
+                                       class="mr-2 text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm">Free</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="accessLevel" value="standard" 
+                                       class="mr-2 text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm">Standard</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="accessLevel" value="premium" 
+                                       class="mr-2 text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm">Premium</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Clear Filters -->
+                    <button onclick="clearAllFilters()" 
+                            class="w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+                        Clear All Filters
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Books Grid -->
+            <div class="lg:w-3/4">
+                <!-- Toolbar -->
+                <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="flex items-center space-x-4">
+                            <span id="resultsCount" class="text-gray-600">Loading books...</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4">
+                            <!-- Sort Options -->
+                            <select id="sortSelect" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                                <option value="title">Sort by Title</option>
+                                <option value="author">Sort by Author</option>
+                                <option value="rating">Sort by Rating</option>
+                                <option value="reviews">Sort by Popularity</option>
+                                <option value="publishDate">Sort by Date</option>
+                                <option value="price">Sort by Price</option>
+                            </select>
+                            
+                            <!-- View Toggle -->
+                            <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+                                <button id="gridViewBtn" class="view-toggle active px-3 py-2 bg-gray-800 text-white">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                                    </svg>
+                                </button>
+                                <button id="listViewBtn" class="view-toggle px-3 py-2 bg-gray-200 text-gray-700">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Books Grid -->
+                <div id="booksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Books will be loaded here -->
+                </div>
+                
+                <!-- Loading Skeleton -->
+                <div id="loadingSkeleton" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Skeleton cards will be generated here -->
+                </div>
+                
+                <!-- No Results -->
+                <div id="noResults" class="hidden text-center py-12">
+                    <div class="text-6xl mb-4">📚</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">No books found</h3>
+                    <p class="text-gray-600 mb-4">Try adjusting your filters or search terms</p>
+                    <button onclick="clearAllFilters()" 
+                            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        Clear All Filters
+                    </button>
+                </div>
+                
+                <!-- Pagination -->
+                <div id="pagination" class="flex justify-center items-center space-x-2 mt-8">
+                    <!-- Pagination will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-display font-bold mb-2">
+                        <span class="gradient-text">CLIQ</span> BOOK
+                    </h3>
+                    <p class="text-gray-400">Made by CLIQSER</p>
+                </div>
+                
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    Empowering readers worldwide with access to quality literature and knowledge. 
+                    Join our community of passionate learners and discover your next favorite book.
+                </p>
+                
+                <div class="border-t border-gray-700 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2024 CLIQ BOOK by CLIQSER. All rights reserved. | Read. Learn. Grow.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+    
+    <script>
+        // Library page specific functionality
+        let currentView = 'grid';
+        let currentSort = 'title';
+        let filteredBooks = [];
+        
+        function initLibraryPage() {
+            // Load URL parameters
+            loadURLParameters();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Load category filters
+            loadCategoryFilters();
+            
+            // Initial render
+            renderBooks();
+        }
+        
+        function loadURLParameters() {
+            const params = new URLSearchParams(window.location.search);
+            
+            // Set search from URL
+            const searchQuery = params.get('search');
+            if (searchQuery) {
+                AppState.filters.search = searchQuery;
+                document.getElementById('searchInput').value = searchQuery;
+                document.getElementById('mobileSearchInput').value = searchQuery;
+            }
+            
+            // Set category from URL
+            const category = params.get('category');
+            if (category) {
+                AppState.filters.category = category;
+            }
+        }
+        
+        function setupEventListeners() {
+            // Filter change listeners
+            document.querySelectorAll('input[name="category"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    AppState.filters.category = e.target.value;
+                    renderBooks();
+                });
+            });
+            
+            document.querySelectorAll('input[name="rating"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    AppState.filters.rating = parseFloat(e.target.value);
+                    renderBooks();
+                });
+            });
+            
+            document.querySelectorAll('input[name="accessLevel"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    AppState.filters.accessLevel = e.target.value;
+                    renderBooks();
+                });
+            });
+            
+            // Sort change listener
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                renderBooks();
+            });
+            
+            // View toggle listeners
+            document.getElementById('gridViewBtn').addEventListener('click', () => {
+                setView('grid');
+            });
+            
+            document.getElementById('listViewBtn').addEventListener('click', () => {
+                setView('list');
+            });
+            
+            // Mobile search
+            const mobileSearch = document.getElementById('mobileSearchInput');
+            if (mobileSearch) {
+                mobileSearch.addEventListener('input', Utils.debounce((e) => {
+                    AppState.filters.search = e.target.value;
+                    renderBooks();
+                }, 300));
+            }
+        }
+        
+        function loadCategoryFilters() {
+            const categoryFilters = document.getElementById('categoryFilters');
+            if (!categoryFilters || !AppState.categories.length) return;
+            
+            categoryFilters.innerHTML = AppState.categories
+                .map(category => `
+                    <label class="flex items-center">
+                        <input type="radio" name="category" value="${category.id}" 
+                               class="mr-2 text-blue-600 focus:ring-blue-500"
+                               ${AppState.filters.category === category.id ? 'checked' : ''}>
+                        <span class="text-sm">${category.name} (${category.bookCount})</span>
+                    </label>
+                `)
+                .join('');
+        }
+        
+        function setView(view) {
+            currentView = view;
+            
+            // Update button states
+            document.getElementById('gridViewBtn').classList.toggle('active', view === 'grid');
+            document.getElementById('listViewBtn').classList.toggle('active', view === 'list');
+            
+            // Update grid layout
+            const booksGrid = document.getElementById('booksGrid');
+            if (view === 'grid') {
+                booksGrid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+            } else {
+                booksGrid.className = 'space-y-4';
+            }
+            
+            renderBooks();
+        }
+        
+        function renderBooks() {
+            const booksGrid = document.getElementById('booksGrid');
+            const noResults = document.getElementById('noResults');
+            const resultsCount = document.getElementById('resultsCount');
+            
+            // Show loading
+            showLoading();
+            
+            // Get filtered books
+            filteredBooks = BookManager.getFilteredBooks();
+            
+            // Apply sorting
+            sortBooks();
+            
+            // Apply pagination
+            const startIndex = (AppState.currentPage - 1) * AppState.booksPerPage;
+            const endIndex = startIndex + AppState.booksPerPage;
+            const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
+            
+            // Update results count
+            resultsCount.textContent = `${filteredBooks.length} books found`;
+            
+            // Hide loading
+            hideLoading();
+            
+            if (paginatedBooks.length === 0) {
+                booksGrid.style.display = 'none';
+                noResults.style.display = 'block';
+            } else {
+                booksGrid.style.display = 'grid';
+                noResults.style.display = 'none';
+                
+                if (currentView === 'grid') {
+                    booksGrid.innerHTML = paginatedBooks
+                        .map(book => UI.createBookCard(book))
+                        .join('');
+                } else {
+                    booksGrid.innerHTML = paginatedBooks
+                        .map(book => createListViewBook(book))
+                        .join('');
+                }
+            }
+            
+            // Render pagination
+            renderPagination();
+        }
+        
+        function createListViewBook(book) {
+            const isBookmarked = BookManager.isBookmarked(book.id);
+            const canAccess = Membership.canAccessBook(book);
+            
+            return `
+                <div class="book-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
+                    <div class="flex">
+                        <div class="relative flex-shrink-0">
+                            <img src="${book.cover}" alt="${book.title}" 
+                                 class="w-32 h-40 object-cover" 
+                                 onerror="this.src='https://via.placeholder.com/256x384.png?text=No+Cover'">
+                            ${(() => {
+                                if (book.accessLevel === 'premium') {
+                                    return '<div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">PREMIUM</div>';
+                                }
+                                if (book.accessLevel === 'standard') {
+                                    return '<div class="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">STANDARD</div>';
+                                }
+                                return '';
+                            })()}
+                        </div>
+                        
+                        <div class="flex-1 p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold text-xl text-gray-800">${book.title}</h3>
+                                <button onclick="BookManager.toggleBookmark('${book.id}')" 
+                                        class="bookmark-btn p-2 rounded-full hover:bg-gray-100 transition-colors ${isBookmarked ? 'bookmarked' : ''}"
+                                        data-book-id="${book.id}">
+                                    ${isBookmarked ? '❤️' : '🤍'}
+                                </button>
+                            </div>
+                            
+                            <p class="text-gray-600 mb-2">by ${book.author}</p>
+                            
+                            <div class="flex items-center mb-3">
+                                <span class="text-yellow-400 mr-1">${Utils.formatRating(book.rating)}</span>
+                                <span class="text-sm text-gray-500">(${book.reviews.toLocaleString()} reviews)</span>
+                                <span class="ml-4 text-sm text-blue-600 font-medium">${book.category}</span>
+                            </div>
+                            
+                            <p class="text-gray-600 mb-4">${Utils.truncateText(book.description, 200)}</p>
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl font-bold text-blue-600">${Utils.formatPrice(book.price)}</span>
+                                <div class="flex space-x-2">
+                                    ${canAccess ? 
+                                        `<button onclick="window.location.href='reader.html?book=${book.id}'" 
+                                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                            Read Now
+                                        </button>` :
+                                        `<button onclick="Membership.showPremiumPrompt(${JSON.stringify(book).replace(/"/g, '&quot;')})" 
+                                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                            Preview
+                                        </button>`
+                                    }
+                                    <button onclick="window.location.href='book.html?id=${book.id}'" 
+                                            class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                        Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function sortBooks() {
+            switch (currentSort) {
+                case 'title':
+                    filteredBooks.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+                case 'author':
+                    filteredBooks.sort((a, b) => a.author.localeCompare(b.author));
+                    break;
+                case 'rating':
+                    filteredBooks.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'reviews':
+                    filteredBooks.sort((a, b) => b.reviews - a.reviews);
+                    break;
+                case 'publishDate':
+                    filteredBooks.sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
+                    break;
+                case 'price':
+                    filteredBooks.sort((a, b) => a.price - b.price);
+                    break;
+            }
+        }
+        
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredBooks.length / AppState.booksPerPage);
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `
+                <button onclick="changePage(${AppState.currentPage - 1})" 
+                        class="pagination-btn px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors ${AppState.currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                        ${AppState.currentPage === 1 ? 'disabled' : ''}>
+                    Previous
+                </button>
+            `;
+            
+            // Page numbers
+            const startPage = Math.max(1, AppState.currentPage - 2);
+            const endPage = Math.min(totalPages, AppState.currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `
+                    <button onclick="changePage(${i})" 
+                            class="pagination-btn px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors ${i === AppState.currentPage ? 'bg-blue-600 text-white border-blue-600' : ''}">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            // Next button
+            paginationHTML += `
+                <button onclick="changePage(${AppState.currentPage + 1})" 
+                        class="pagination-btn px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors ${AppState.currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}"
+                        ${AppState.currentPage === totalPages ? 'disabled' : ''}>
+                    Next
+                </button>
+            `;
+            
+            pagination.innerHTML = paginationHTML;
+        }
+        
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredBooks.length / AppState.booksPerPage);
+            if (page < 1 || page > totalPages) return;
+            
+            AppState.currentPage = page;
+            renderBooks();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function showLoading() {
+            const loadingSkeleton = document.getElementById('loadingSkeleton');
+            const booksGrid = document.getElementById('booksGrid');
+            
+            // Generate skeleton cards
+            loadingSkeleton.innerHTML = Array(12).fill().map(() => `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="loading-skeleton h-64"></div>
+                    <div class="p-4">
+                        <div class="loading-skeleton h-6 mb-2 rounded"></div>
+                        <div class="loading-skeleton h-4 mb-2 rounded w-3/4"></div>
+                        <div class="loading-skeleton h-4 mb-3 rounded w-1/2"></div>
+                        <div class="loading-skeleton h-10 rounded"></div>
+                    </div>
+                </div>
+            `).join('');
+            
+            loadingSkeleton.style.display = 'grid';
+            booksGrid.style.display = 'none';
+        }
+        
+        function hideLoading() {
+            const loadingSkeleton = document.getElementById('loadingSkeleton');
+            const booksGrid = document.getElementById('booksGrid');
+            
+            loadingSkeleton.style.display = 'none';
+            booksGrid.style.display = currentView === 'grid' ? 'grid' : 'block';
+        }
+        
+        function clearAllFilters() {
+            // Reset filters
+            AppState.filters = {
+                category: 'all',
+                rating: 0,
+                search: '',
+                accessLevel: 'all'
+            };
+            
+            // Reset form
+            document.querySelector('input[name="category"][value="all"]').checked = true;
+            document.querySelector('input[name="rating"][value="0"]').checked = true;
+            document.querySelector('input[name="accessLevel"][value="all"]').checked = true;
+            document.getElementById('searchInput').value = '';
+            
+            const mobileSearch = document.getElementById('mobileSearchInput');
+            if (mobileSearch) mobileSearch.value = '';
+            
+            // Reset page
+            AppState.currentPage = 1;
+            
+            // Re-render
+            renderBooks();
+        }
+        
+        // Initialize library page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Small delay to ensure main.js is fully loaded
+            setTimeout(initLibraryPage, 100);
+        });
+    </script>
+</body>
+</html>

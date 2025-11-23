@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Register - CLIQ BOOK | Join Our Reading Community</title>
+    <meta name="description" content="Join CLIQ BOOK today! Create your account to access thousands of premium eBooks and start your reading journey.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1a2332;
+            --secondary: #f4a261;
+            --background: #fefefe;
+            --text: #2d3748;
+            --success: #2d5a3d;
+            --warning: #d69e2e;
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--secondary), #e76f51);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .auth-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('resources/hero-bg.jpg') center/cover;
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .auth-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .auth-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .form-input {
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .social-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .password-strength.weak {
+            background: #ef4444;
+            width: 33%;
+        }
+        
+        .password-strength.medium {
+            background: #f59e0b;
+            width: 66%;
+        }
+        
+        .password-strength.strong {
+            background: #10b981;
+            width: 100%;
+        }
+        
+        .floating-books {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .floating-book {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(3deg); }
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Background -->
+    <div class="auth-bg fixed inset-0">
+        <div class="floating-books">
+            <div class="floating-book" style="top: 10%; left: 5%; animation-delay: 0s;"></div>
+            <div class="floating-book" style="top: 20%; right: 10%; animation-delay: 2s;"></div>
+            <div class="floating-book" style="bottom: 30%; left: 15%; animation-delay: 4s;"></div>
+            <div class="floating-book" style="bottom: 20%; right: 5%; animation-delay: 6s;"></div>
+            <div class="floating-book" style="top: 60%; left: 8%; animation-delay: 3s;"></div>
+            <div class="floating-book" style="top: 40%; right: 12%; animation-delay: 5s;"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-display font-bold text-gray-800">
+                            <a href="index.html"><span class="gradient-text">CLIQ</span> BOOK</a>
+                        </h1>
+                    </div>
+                </div>
+                
+                <!-- Back to Home -->
+                <div class="flex items-center">
+                    <a href="index.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                        ← Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="auth-content pt-16 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full">
+            <!-- Welcome Text -->
+            <div class="text-center mb-8 reveal">
+                <h2 class="text-3xl font-display font-bold text-white mb-2">
+                    Welcome to <span class="text-yellow-400">CLIQ BOOK</span>
+                </h2>
+                <p class="text-white opacity-90">
+                    Join our community of passionate readers
+                </p>
+            </div>
+            
+            <!-- Auth Card -->
+            <div class="auth-card rounded-lg shadow-xl p-8 reveal">
+                <!-- Tabs -->
+                <div class="flex mb-8 bg-gray-100 rounded-lg p-1">
+                    <button id="loginTab" class="tab-button flex-1 py-2 px-4 rounded-md text-center font-semibold transition-colors active">
+                        Login
+                    </button>
+                    <button id="registerTab" class="tab-button flex-1 py-2 px-4 rounded-md text-center font-semibold transition-colors">
+                        Register
+                    </button>
+                </div>
+                
+                <!-- Login Form -->
+                <div id="loginForm" class="space-y-6">
+                    <div>
+                        <label for="loginEmail" class="block text-sm font-medium text-gray-700 mb-2">
+                            Email Address
+                        </label>
+                        <input type="email" id="loginEmail" name="email" required 
+                               class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Enter your email">
+                    </div>
+                    
+                    <div>
+                        <label for="loginPassword" class="block text-sm font-medium text-gray-700 mb-2">
+                            Password
+                        </label>
+                        <input type="password" id="loginPassword" name="password" required 
+                               class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Enter your password">
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                        </label>
+                        <a href="#" class="text-sm text-blue-600 hover:text-blue-500">
+                            Forgot password?
+                        </a>
+                    </div>
+                    
+                    <button onclick="handleLogin()" 
+                            class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Sign In
+                    </button>
+                    
+
+                </div>
+                
+                <!-- Register Form -->
+                <div id="registerForm" class="space-y-6 hidden">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">
+                                First Name
+                            </label>
+                            <input type="text" id="firstName" name="firstName" required 
+                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="Your first name">
+                        </div>
+                        <div>
+                            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">
+                                Last Name
+                            </label>
+                            <input type="text" id="lastName" name="lastName" required 
+                                   class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="Your last name">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="registerEmail" class="block text-sm font-medium text-gray-700 mb-2">
+                            Email Address
+                        </label>
+                        <input type="email" id="registerEmail" name="email" required 
+                               class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Enter your email">
+                    </div>
+                    
+                    <div>
+                        <label for="registerPassword" class="block text-sm font-medium text-gray-700 mb-2">
+                            Password
+                        </label>
+                        <input type="password" id="registerPassword" name="password" required 
+                               class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Create a password"
+                               oninput="checkPasswordStrength(this.value)">
+                        <div class="mt-2">
+                            <div class="flex space-x-1">
+                                <div class="flex-1 bg-gray-200 rounded-full">
+                                    <div id="passwordStrength" class="password-strength h-2 rounded-full"></div>
+                                </div>
+                            </div>
+                            <p id="passwordStrengthText" class="text-xs text-gray-500 mt-1">Password strength: Weak</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">
+                            Confirm Password
+                        </label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required 
+                               class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Confirm your password">
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <input type="checkbox" id="terms" name="terms" required 
+                               class="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <label for="terms" class="ml-2 text-sm text-gray-600">
+                            I agree to the <a href="#" class="text-blue-600 hover:text-blue-500">Terms of Service</a> 
+                            and <a href="#" class="text-blue-600 hover:text-blue-500">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <button onclick="handleRegister()" 
+                            class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                        Create Account
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Additional Info -->
+            <div class="text-center mt-8 reveal">
+                <p class="text-white opacity-75 mb-4">
+                    By joining CLIQ BOOK, you get access to:
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">📚</div>
+                        <p class="text-white text-sm">10,000+ Books</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">📱</div>
+                        <p class="text-white text-sm">Multi-Device Sync</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">🎯</div>
+                        <p class="text-white text-sm">Personalized Recommendations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-display font-bold mb-2">
+                        <span class="gradient-text">CLIQ</span> BOOK
+                    </h3>
+                    <p class="text-gray-400">Made by CLIQSER</p>
+                </div>
+                
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    Empowering readers worldwide with access to quality literature and knowledge. 
+                    Join our community of passionate learners and discover your next favorite book.
+                </p>
+                
+                <div class="border-t border-gray-700 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2024 CLIQ BOOK by CLIQSER. All rights reserved. | Read. Learn. Grow.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+    
+    <script>
+        // Login page specific functionality
+        let currentTab = 'login';
+        
+        function initLoginPage() {
+            // Initialize tab switching
+            setupTabSwitching();
+            
+            // Initialize scroll animations
+            initScrollAnimations();
+            
+            // Check for redirect parameters
+            checkRedirectParams();
+        }
+        
+        function setupTabSwitching() {
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            loginTab.addEventListener('click', () => switchTab('login'));
+            registerTab.addEventListener('click', () => switchTab('register'));
+        }
+        
+        function switchTab(tab) {
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            currentTab = tab;
+            
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+            } else {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                registerForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+        
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                Utils.showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                Utils.showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            // Mock login process
+            Utils.showNotification('Logging in...', 'info');
+            
+            setTimeout(() => {
+                const success = Auth.login(email, password);
+                if (success) {
+                    // Check for redirect
+                    const params = new URLSearchParams(window.location.search);
+                    const redirect = params.get('redirect');
+
+                    if (redirect === 'admin') {
+                        if (AppState.currentUser && AppState.currentUser.isAdmin) {
+                            window.location.href = 'admin.html';
+                        } else {
+                            Utils.showNotification('You do not have permission to access the admin panel.', 'error');
+                            Auth.logout(); // Log out the non-admin user
+                        }
+                        return; // Stop further execution
+                    }
+                    
+                    if (redirect) {
+                        const plan = params.get('plan');
+                        const search = params.get('search');
+                        let redirectUrl = `${redirect}.html`;
+                        
+                        if (plan) redirectUrl += `?plan=${plan}`;
+                        if (search) redirectUrl += `${plan ? '&' : '?'}search=${search}`;
+                        
+                        window.location.href = redirectUrl;
+                    } else {
+                        window.location.href = 'library.html';
+                    }
+                }
+            }, 1500);
+        }
+        
+        function handleRegister() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const termsAccepted = document.getElementById('terms').checked;
+            
+            // Validation
+            if (!firstName || !lastName || !email || !password || !confirmPassword) {
+                Utils.showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                Utils.showNotification('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                Utils.showNotification('Password must be at least 6 characters long', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                Utils.showNotification('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (!termsAccepted) {
+                Utils.showNotification('Please accept the terms and conditions', 'error');
+                return;
+            }
+            
+            // Mock registration process
+            Utils.showNotification('Creating your account...', 'info');
+            
+            setTimeout(() => {
+                const userData = {
+                    name: `${firstName} ${lastName}`,
+                    email: email,
+                    password: password, // In real app, this would be hashed
+                    avatar: `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=random`
+                };
+                
+                const success = Auth.register(userData);
+                if (success) {
+                    setTimeout(() => {
+                        window.location.href = 'library.html';
+                    }, 1000);
+                }
+            }, 1500);
+        }
+        
+
+        function checkPasswordStrength(password) {
+            const strengthBar = document.getElementById('passwordStrength');
+            const strengthText = document.getElementById('passwordStrengthText');
+            
+            let strength = 0;
+            
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            if (strength < 2) {
+                strengthBar.className = 'password-strength weak';
+                strengthText.textContent = 'Password strength: Weak';
+                strengthText.className = 'text-xs text-red-500 mt-1';
+            } else if (strength < 4) {
+                strengthBar.className = 'password-strength medium';
+                strengthText.textContent = 'Password strength: Medium';
+                strengthText.className = 'text-xs text-yellow-500 mt-1';
+            } else {
+                strengthBar.className = 'password-strength strong';
+                strengthText.textContent = 'Password strength: Strong';
+                strengthText.className = 'text-xs text-green-500 mt-1';
+            }
+        }
+        
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function checkRedirectParams() {
+            const params = new URLSearchParams(window.location.search);
+            const plan = params.get('plan');
+            
+            if (plan) {
+                // If coming from membership page, show appropriate message
+                Utils.showNotification('Please login or register to continue with your subscription', 'info');
+            }
+        }
+        
+        function initScrollAnimations() {
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            revealElements.forEach(el => revealObserver.observe(el));
+        }
+        
+        // Form submission handlers
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (currentTab === 'login') {
+                    handleLogin();
+                } else {
+                    handleRegister();
+                }
+            }
+        });
+        
+        // Initialize login page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Small delay to ensure main.js is fully loaded
+            setTimeout(initLoginPage, 100);
+        });
+    </script>
+</body>
+</html>

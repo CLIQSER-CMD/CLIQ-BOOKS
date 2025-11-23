@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="bookTitle">Book Details - CLIQ BOOK</title>
+    <meta name="description" id="bookDescription" content="Discover detailed information, preview, and reviews for this book on CLIQ BOOK.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- PDF.js for book preview -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1a2332;
+            --secondary: #f4a261;
+            --background: #fefefe;
+            --text: #2d3748;
+            --success: #2d5a3d;
+            --warning: #d69e2e;
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--secondary), #e76f51);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .book-cover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .book-cover:hover {
+            transform: scale(1.05);
+        }
+        
+        .rating-stars {
+            color: #fbbf24;
+        }
+        
+        .review-card {
+            transition: all 0.3s ease;
+        }
+        
+        .review-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-modal {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+        }
+        
+        .preview-content {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .preview-page {
+            background: white;
+            margin: 20px auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+        }
+        
+        .lesson-item {
+            transition: all 0.2s ease;
+        }
+        
+        .lesson-item:hover {
+            background: #f8fafc;
+            transform: translateX(4px);
+        }
+        
+        .related-book {
+            transition: all 0.3s ease;
+        }
+        
+        .related-book:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .breadcrumb {
+            color: #6b7280;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .breadcrumb:hover {
+            color: var(--primary);
+        }
+        
+        .action-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-display font-bold text-gray-800">
+                            <a href="index.html"><span class="gradient-text">CLIQ</span> BOOK</a>
+                        </h1>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                        <a href="library.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Library</a>
+                        <a href="membership.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Membership</a>
+
+                    </div>
+                </div>
+                
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <button id="loginBtn" onclick="window.location.href='login.html'" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Login
+                    </button>
+                    
+                    <div id="userMenu" class="hidden items-center space-x-3">
+                        <img id="userAvatar" src="https://via.placeholder.com/150" alt="User" 
+                             class="w-8 h-8 rounded-full object-cover">
+                        <span id="userName" class="text-sm font-medium text-gray-700"></span>
+                        <button id="logoutBtn" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="md:hidden p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-16 min-h-screen">
+        <!-- Breadcrumb -->
+        <div class="bg-white border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <nav class="flex" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-2">
+                        <li>
+                            <a href="index.html" class="breadcrumb">Home</a>
+                        </li>
+                        <li>
+                            <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </li>
+                        <li>
+                            <a href="library.html" class="breadcrumb">Library</a>
+                        </li>
+                        <li>
+                            <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </li>
+                        <li>
+                            <span id="currentBookTitle" class="text-gray-500 font-medium">Book Details</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Book Details -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Book Cover & Actions -->
+                <div class="lg:col-span-1">
+                    <div class="sticky top-24">
+                        <div class="text-center mb-6">
+                            <img id="bookCover" src="https://via.placeholder.com/256x384.png?text=No+Cover" alt="Book Cover" 
+                                 class="book-cover w-64 h-80 mx-auto rounded-lg object-cover">
+                        </div>
+                        
+                        <!-- Book Info -->
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <div class="text-center">
+                                <div class="rating-stars text-2xl mb-2" id="bookRating">★★★★★</div>
+                                <p class="text-gray-600 mb-2" id="bookReviews">0 reviews</p>
+                                <p class="text-sm text-gray-500" id="bookPages">0 pages</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="space-y-3" id="bookActions">
+                            <!-- Actions will be populated based on user membership -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Book Information -->
+                <div class="lg:col-span-2">
+                    <!-- Main Info -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h1 id="bookTitleDisplay" class="text-4xl font-display font-bold text-gray-800 mb-2"></h1>
+                        <p class="text-xl text-gray-600 mb-4">by <span id="bookAuthor"></span></p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span id="bookCategory" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium"></span>
+                            <span id="bookPremium" class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium hidden">PREMIUM</span>
+                            <span id="bookStandard" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium hidden">STANDARD</span>
+                        </div>
+                        
+                        <p id="bookDescriptionDisplay" class="text-gray-700 leading-relaxed mb-4"></p>
+                        
+                        <div class="flex items-center justify-between">
+                            <span id="bookPrice" class="text-3xl font-bold text-blue-600"></span>
+                            <button id="bookmarkBtn" onclick="toggleBookmark()" 
+                                    class="p-3 rounded-full hover:bg-gray-100 transition-colors">
+                                <span id="bookmarkIcon">🤍</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Summary</h2>
+                        <p id="bookSummary" class="text-gray-700 leading-relaxed"></p>
+                    </div>
+                    
+                    <!-- Key Lessons -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Key Lessons</h2>
+                        <ul id="bookLessons" class="space-y-3">
+                            <!-- Lessons will be populated here -->
+                        </ul>
+                    </div>
+                    
+                    <!-- Book Details -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Book Details</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-gray-600">Author:</span>
+                                <span id="bookAuthorDetail" class="font-medium ml-2"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Category:</span>
+                                <span id="bookCategoryDetail" class="font-medium ml-2"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Pages:</span>
+                                <span id="bookPagesDetail" class="font-medium ml-2"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Published:</span>
+                                <span id="bookPublishDate" class="font-medium ml-2"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Rating:</span>
+                                <span id="bookRatingDetail" class="font-medium ml-2"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Reviews:</span>
+                                <span id="bookReviewsDetail" class="font-medium ml-2"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tags -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Tags</h2>
+                        <div id="bookTags" class="flex flex-wrap gap-2">
+                            <!-- Tags will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reviews Section -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Reviews</h2>
+                <div id="bookReviews" class="space-y-4">
+                    <!-- Reviews will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Related Books -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Related Books</h2>
+                <div id="relatedBooks" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Related books will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 preview-modal hidden z-50 flex items-center justify-center p-4">
+        <div class="preview-content bg-white rounded-lg max-w-4xl w-full max-h-full overflow-hidden">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-bold text-gray-800">Book Preview</h3>
+                <button onclick="closePreview()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="previewContent" class="p-6">
+                <!-- Preview content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-display font-bold mb-2">
+                        <span class="gradient-text">CLIQ</span> BOOK
+                    </h3>
+                    <p class="text-gray-400">Made by CLIQSER</p>
+                </div>
+                
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    Empowering readers worldwide with access to quality literature and knowledge. 
+                    Join our community of passionate learners and discover your next favorite book.
+                </p>
+                
+                <div class="border-t border-gray-700 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2024 CLIQ BOOK by CLIQSER. All rights reserved. | Read. Learn. Grow.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+    
+    <script>
+        // Book page specific functionality
+        let currentBook = null;
+        let previewPages = [];
+        
+        function initBookPage() {
+            // Get book ID from URL
+            const params = new URLSearchParams(window.location.search);
+            const bookId = params.get('id');
+            
+            if (!bookId) {
+                // Redirect to library if no book ID
+                window.location.href = 'library.html';
+                return;
+            }
+            
+            // Load book data
+            loadBookData(bookId);
+        }
+        
+        function loadBookData(bookId) {
+            currentBook = AppState.books.find(book => book.id === bookId);
+            
+            if (!currentBook) {
+                // Book not found, redirect to library
+                Utils.showNotification('Book not found', 'error');
+                setTimeout(() => {
+                    window.location.href = 'library.html';
+                }, 2000);
+                return;
+            }
+            
+            // Populate book information
+            populateBookInfo();
+            
+            // Load related books
+            loadRelatedBooks();
+            
+            // Load reviews
+            loadReviews();
+            
+            // Update page title and meta
+            updatePageMeta();
+        }
+        
+        function populateBookInfo() {
+            if (!currentBook) return;
+            
+            // Basic information
+            document.getElementById('bookCover').src = currentBook.cover;
+            document.getElementById('bookCover').alt = currentBook.title;
+            document.getElementById('bookTitleDisplay').textContent = currentBook.title;
+            document.getElementById('bookTitle').textContent = `${currentBook.title} - CLIQ BOOK`;
+            document.getElementById('currentBookTitle').textContent = currentBook.title;
+            document.getElementById('bookAuthor').textContent = currentBook.author;
+            document.getElementById('bookAuthorDetail').textContent = currentBook.author;
+            document.getElementById('bookCategory').textContent = currentBook.category;
+            document.getElementById('bookCategoryDetail').textContent = currentBook.category;
+            document.getElementById('bookDescriptionDisplay').textContent = currentBook.description;
+            document.getElementById('bookDescription').setAttribute('content', currentBook.description);
+            document.getElementById('bookSummary').textContent = currentBook.summary;
+            document.getElementById('bookPrice').textContent = Utils.formatPrice(currentBook.price);
+            document.getElementById('bookPages').textContent = `${currentBook.pages} pages`;
+            document.getElementById('bookPagesDetail').textContent = currentBook.pages;
+            document.getElementById('bookReviews').textContent = `${currentBook.reviews.toLocaleString()} reviews`;
+            document.getElementById('bookReviewsDetail').textContent = currentBook.reviews.toLocaleString();
+            document.getElementById('bookPublishDate').textContent = new Date(currentBook.publishDate).toLocaleDateString();
+            
+            // Rating
+            const ratingElement = document.getElementById('bookRating');
+            ratingElement.textContent = Utils.formatRating(currentBook.rating);
+            document.getElementById('bookRatingDetail').textContent = `${currentBook.rating}/5`;
+            
+            // Access level badge
+            if (currentBook.accessLevel === 'premium') {
+                document.getElementById('bookPremium').classList.remove('hidden');
+            } else if (currentBook.accessLevel === 'standard') {
+                document.getElementById('bookStandard').classList.remove('hidden');
+            }
+            
+            // Key lessons
+            const lessonsList = document.getElementById('bookLessons');
+            lessonsList.innerHTML = currentBook.keyLessons
+                .map(lesson => `
+                    <li class="lesson-item flex items-start p-3 rounded-lg">
+                        <span class="text-green-500 mr-3 mt-1">•</span>
+                        <span class="text-gray-700">${lesson}</span>
+                    </li>
+                `)
+                .join('');
+            
+            // Tags
+            const tagsContainer = document.getElementById('bookTags');
+            tagsContainer.innerHTML = currentBook.tags
+                .map(tag => `
+                    <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                        ${tag}
+                    </span>
+                `)
+                .join('');
+            
+            // Actions
+            populateActions();
+            
+            // Bookmark status
+            updateBookmarkStatus();
+        }
+        
+        function populateActions() {
+            const actionsContainer = document.getElementById('bookActions');
+            const canAccess = Membership.canAccessBook(currentBook);
+            
+            let actionsHTML = '';
+            
+            if (canAccess) {
+                actionsHTML += `
+                    <button onclick="readBook()" 
+                            class="action-btn w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                        📖 Read Now
+                    </button>
+                `;
+            } else {
+                actionsHTML += `
+                    <button onclick="previewBook()" 
+                            class="action-btn w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        👁️ Preview (${currentBook.previewPages} pages)
+                    </button>
+                    <button onclick="Membership.showPremiumPrompt(currentBook)" 
+                            class="action-btn w-full bg-yellow-500 text-black py-3 px-4 rounded-lg font-semibold hover:bg-yellow-400 transition-colors">
+                        👑 Upgrade to Read Full Book
+                    </button>
+                `;
+            }
+            
+            actionsHTML += `
+                <button onclick="toggleBookmark()" 
+                        class="action-btn w-full border-2 border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                    <span id="bookmarkActionText">Add to Bookmarks</span>
+                </button>
+                <button onclick="shareBook()" 
+                        class="action-btn w-full bg-gray-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                    📤 Share Book
+                </button>
+            `;
+            
+            actionsContainer.innerHTML = actionsHTML;
+        }
+        
+        function loadRelatedBooks() {
+            const relatedBooksContainer = document.getElementById('relatedBooks');
+            
+            // Get books from same category, excluding current book
+            const relatedBooks = AppState.books
+                .filter(book => book.id !== currentBook.id && book.category === currentBook.category)
+                .slice(0, 4);
+            
+            if (relatedBooks.length === 0) {
+                // If no same category books, get trending books
+                const trendingBooks = BookManager.getTrendingBooks(4)
+                    .filter(book => book.id !== currentBook.id);
+                
+                relatedBooksContainer.innerHTML = trendingBooks
+                    .map(book => createRelatedBookCard(book))
+                    .join('');
+            } else {
+                relatedBooksContainer.innerHTML = relatedBooks
+                    .map(book => createRelatedBookCard(book))
+                    .join('');
+            }
+        }
+        
+        function createRelatedBookCard(book) {
+            return `
+                <div class="related-book bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
+                     onclick="window.location.href='book.html?id=${book.id}'">
+                    <img src="${book.cover}" alt="${book.title}" 
+                         class="w-full h-48 object-cover" 
+                         onerror="this.src='https://via.placeholder.com/256x384.png?text=No+Cover'">
+                    <div class="p-4">
+                        <h4 class="font-bold text-lg mb-1 text-gray-800 line-clamp-2">${book.title}</h4>
+                        <p class="text-gray-600 text-sm mb-2">by ${book.author}</p>
+                        <div class="flex items-center mb-2">
+                            <span class="text-yellow-400 text-sm mr-1">${Utils.formatRating(book.rating)}</span>
+                            <span class="text-xs text-gray-500">(${book.reviews})</span>
+                        </div>
+                        <p class="text-lg font-bold text-blue-600">${Utils.formatPrice(book.price)}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function loadReviews() {
+            const reviewsContainer = document.getElementById('bookReviews');
+            
+            // Generate mock reviews based on book data
+            const mockReviews = generateMockReviews(currentBook);
+            
+            reviewsContainer.innerHTML = mockReviews
+                .map(review => `
+                    <div class="review-card bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-start space-x-3">
+                            <img src="${review.avatar}" alt="${review.author}" 
+                                 class="w-10 h-10 rounded-full object-cover">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h5 class="font-semibold text-gray-800">${review.author}</h5>
+                                    <div class="rating-stars text-sm">${Utils.formatRating(review.rating)}</div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-2">${review.date}</p>
+                                <p class="text-gray-700">${review.content}</p>
+                            </div>
+                        </div>
+                    </div>
+                `)
+                .join('');
+        }
+        
+        function generateMockReviews(book) {
+            const reviewTemplates = [
+                "An absolutely fantastic read! This book exceeded all my expectations. The author's insights are truly valuable.",
+                "Highly recommended for anyone looking to improve their knowledge in this area. Well-written and engaging.",
+                "One of the best books I've read this year. The concepts are clearly explained and easy to apply.",
+                "A must-read! The author's approach is both practical and inspiring. I've already recommended it to friends.",
+                "Great content with actionable advice. The examples provided are very helpful in understanding the concepts."
+            ];
+            
+            const names = ["Sarah Johnson", "Michael Chen", "Emily Rodriguez", "David Williams", "Lisa Thompson"];
+            const reviews = [];
+            
+            for (let i = 0; i < Math.min(5, book.reviews / 1000); i++) {
+                reviews.push({
+                    author: names[i],
+                    avatar: `https://ui-avatars.com/api/?name=${names[i].replace(' ', '+')}&background=random`,
+                    rating: Math.max(4, book.rating - Math.random() * 0.5),
+                    content: reviewTemplates[i],
+                    date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString()
+                });
+            }
+            
+            return reviews;
+        }
+        
+        function updatePageMeta() {
+            if (!currentBook) return;
+            
+            document.title = `${currentBook.title} - CLIQ BOOK`;
+            
+            const metaDescription = document.querySelector('meta[name="description"]');
+            if (metaDescription) {
+                metaDescription.setAttribute('content', 
+                    `Discover ${currentBook.title} by ${currentBook.author}. ${Utils.truncateText(currentBook.description, 150)}`);
+            }
+        }
+        
+        function updateBookmarkStatus() {
+            if (!currentBook || !AppState.currentUser) return;
+            
+            const isBookmarked = BookManager.isBookmarked(currentBook.id);
+            const bookmarkIcon = document.getElementById('bookmarkIcon');
+            const bookmarkActionText = document.getElementById('bookmarkActionText');
+            
+            if (bookmarkIcon) {
+                bookmarkIcon.textContent = isBookmarked ? '❤️' : '🤍';
+            }
+            
+            if (bookmarkActionText) {
+                bookmarkActionText.textContent = isBookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks';
+            }
+        }
+        
+        function toggleBookmark() {
+            if (!currentBook) return;
+            
+            BookManager.toggleBookmark(currentBook.id);
+            updateBookmarkStatus();
+        }
+        
+        function readBook() {
+            if (!currentBook) return;
+            
+            window.location.href = `reader.html?book=${currentBook.id}`;
+        }
+        
+        function previewBook() {
+            if (!currentBook) return;
+            
+            // Show preview modal
+            const modal = document.getElementById('previewModal');
+            const content = document.getElementById('previewContent');
+            
+            content.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="text-6xl mb-4">📖</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Loading Preview...</h3>
+                    <p class="text-gray-600 mb-6">Preparing ${currentBook.previewPages} pages for preview</p>
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            
+            // Simulate loading preview pages
+            setTimeout(() => {
+                generatePreviewContent();
+            }, 1500);
+        }
+        
+        function generatePreviewContent() {
+            const content = document.getElementById('previewContent');
+            
+            let previewHTML = `
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">${currentBook.title}</h3>
+                    <p class="text-gray-600">by ${currentBook.author}</p>
+                    <p class="text-sm text-gray-500 mt-2">Preview - ${currentBook.previewPages} pages</p>
+                </div>
+            `;
+            
+            // Generate mock preview pages
+            for (let i = 1; i <= currentBook.previewPages; i++) {
+                previewHTML += `
+                    <div class="preview-page p-8">
+                        <div class="text-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800">${currentBook.title}</h2>
+                            <p class="text-lg text-gray-600">by ${currentBook.author}</p>
+                            <p class="text-sm text-gray-500 mt-2">Page ${i}</p>
+                        </div>
+                        <div class="prose max-w-none">
+                            <p class="text-gray-700 leading-relaxed mb-4">
+                                This is a preview page ${i} of ${currentBook.title}. In the full version of this book, 
+                                you would find detailed content, insights, and valuable information from the author.
+                            </p>
+                            <p class="text-gray-700 leading-relaxed mb-4">
+                                ${currentBook.summary.substring(0, 200)}...
+                            </p>
+                            <p class="text-gray-700 leading-relaxed">
+                                To access the complete content of this book, including all ${currentBook.pages} pages, 
+                                please consider upgrading to our premium membership.
+                            </p>
+                        </div>
+                        <div class="text-center mt-8">
+                            <div class="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded">
+                                <p class="text-sm">
+                                    <strong>Preview Only:</strong> This is page ${i} of ${currentBook.previewPages} preview pages.
+                                    <a href="membership.html" class="text-blue-600 hover:underline ml-2">Upgrade to Premium</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = previewHTML;
+        }
+        
+        function closePreview() {
+            document.getElementById('previewModal').classList.add('hidden');
+        }
+        
+        function shareBook() {
+            if (!currentBook) return;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: currentBook.title,
+                    text: `Check out "${currentBook.title}" by ${currentBook.author}`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback - copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    Utils.showNotification('Book link copied to clipboard!', 'success');
+                });
+            }
+        }
+        
+        // Close modal on backdrop click
+        document.getElementById('previewModal').addEventListener('click', (e) => {
+            if (e.target.id === 'previewModal') {
+                closePreview();
+            }
+        });
+        
+        // Initialize book page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Small delay to ensure main.js is fully loaded
+            setTimeout(initBookPage, 100);
+        });
+    </script>
+</body>
+</html>

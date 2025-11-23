@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - CLIQ BOOK | Manage Your Account & Reading History</title>
+    <meta name="description" content="Manage your CLIQ BOOK account, view reading history, bookmarks, and subscription details.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- ECharts for reading statistics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1a2332;
+            --secondary: #f4a261;
+            --background: #fefefe;
+            --text: #2d3748;
+            --success: #2d5a3d;
+            --warning: #d69e2e;
+        }
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--secondary), #e76f51);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .profile-card {
+            transition: all 0.3s ease;
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .book-item {
+            transition: all 0.3s ease;
+        }
+        
+        .book-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .reading-progress {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .reading-progress-fill {
+            background: linear-gradient(90deg, var(--secondary), #e76f51);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .achievement-badge {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #8b5a00;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 8px;
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-display font-bold text-gray-800">
+                            <a href="index.html"><span class="gradient-text">CLIQ</span> BOOK</a>
+                        </h1>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="index.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                        <a href="library.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Library</a>
+                        <a href="membership.html" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Membership</a>
+                        <a href="profile.html" class="text-gray-800 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Profile</a>
+                    </div>
+                </div>
+                
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <button id="loginBtn" onclick="window.location.href='login.html'" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Login
+                    </button>
+                    
+                    <div id="userMenu" class="hidden items-center space-x-3">
+                        <img id="userAvatar" src="https://via.placeholder.com/150" alt="User" 
+                             class="w-8 h-8 rounded-full object-cover">
+                        <span id="userName" class="text-sm font-medium text-gray-700"></span>
+                        <button id="logoutBtn" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="md:hidden p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Header -->
+    <section class="pt-16 pb-8 bg-gradient-to-r from-blue-600 to-purple-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex flex-col md:flex-row items-center text-center md:text-left">
+                <div class="mb-6 md:mb-0 md:mr-8">
+                    <img id="profileAvatar" src="https://via.placeholder.com/150" alt="Profile" 
+                         class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+                </div>
+                
+                <div class="text-white">
+                    <h1 id="profileName" class="text-4xl font-display font-bold mb-2">User Profile</h1>
+                    <p id="profileEmail" class="text-xl opacity-90 mb-4">user@email.com</p>
+                    
+                    <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                        <span id="membershipBadge" class="bg-yellow-500 text-black px-4 py-2 rounded-full font-semibold">
+                            Free Member
+                        </span>
+                        <span class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-full">
+                            Joined <span id="joinDate">Recently</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 reveal">
+            <div class="stat-card rounded-lg p-6 text-center">
+                <div class="text-3xl font-bold mb-2" id="booksRead">0</div>
+                <p class="text-sm opacity-90">Books Read</p>
+            </div>
+            
+            <div class="stat-card rounded-lg p-6 text-center">
+                <div class="text-3xl font-bold mb-2" id="readingHours">0</div>
+                <p class="text-sm opacity-90">Hours Read</p>
+            </div>
+            
+            <div class="stat-card rounded-lg p-6 text-center">
+                <div class="text-3xl font-bold mb-2" id="bookmarksCount">0</div>
+                <p class="text-sm opacity-90">Bookmarks</p>
+            </div>
+            
+            <div class="stat-card rounded-lg p-6 text-center">
+                <div class="text-3xl font-bold mb-2" id="favoriteCategory">Fiction</div>
+                <p class="text-sm opacity-90">Favorite Genre</p>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-8 reveal">
+            <div class="flex flex-wrap gap-2">
+                <button onclick="switchTab('reading')" 
+                        class="tab-button active px-6 py-3 rounded-lg font-semibold transition-colors">
+                    📚 Reading History
+                </button>
+                <button onclick="switchTab('bookmarks')" 
+                        class="tab-button px-6 py-3 rounded-lg font-semibold transition-colors">
+                    🔖 Bookmarks
+                </button>
+                <button onclick="switchTab('subscription')" 
+                        class="tab-button px-6 py-3 rounded-lg font-semibold transition-colors">
+                    💳 Subscription
+                </button>
+                <button onclick="switchTab('settings')" 
+                        class="tab-button px-6 py-3 rounded-lg font-semibold transition-colors">
+                    ⚙️ Account Settings
+                </button>
+            </div>
+        </div>
+
+        <!-- Reading History Tab -->
+        <div id="readingTab" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Reading Statistics -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Reading Progress</h3>
+                        <div class="text-center mb-4">
+                            <svg class="progress-ring w-24 h-24 mx-auto" viewBox="0 0 120 120">
+                                <circle class="progress-ring-circle" stroke="#e5e7eb" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                                <circle id="progressCircle" class="progress-ring-circle" stroke="#f4a261" stroke-width="8" fill="transparent" r="52" cx="60" cy="60" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="progressPercentage" class="text-2xl font-bold text-gray-800">0%</span>
+                            </div>
+                        </div>
+                        <p class="text-center text-gray-600">Monthly Reading Goal</p>
+                    </div>
+                    
+                    <!-- Achievements -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Achievements</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div class="achievement-badge">🏆</div>
+                                <p class="text-xs">First Book</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="achievement-badge">📚</div>
+                                <p class="text-xs">10 Books</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="achievement-badge">🔥</div>
+                                <p class="text-xs">Reading Streak</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Books -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Recently Read</h3>
+                        <div id="recentBooks" class="space-y-4">
+                            <!-- Recent books will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookmarks Tab -->
+        <div id="bookmarksTab" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">My Bookmarks</h3>
+                <div id="allBookmarks" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Bookmarks will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Tab -->
+        <div id="subscriptionTab" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Current Plan -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Current Plan</h3>
+                    <div id="currentPlan" class="text-center py-8">
+                        <!-- Plan details will be loaded here -->
+                    </div>
+                    <div class="text-center">
+                        <button onclick="window.location.href='membership.html'" 
+                                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                            Upgrade Plan
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Billing History -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Billing History</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-semibold">Free Plan</p>
+                                <p class="text-sm text-gray-600">Started • Current</p>
+                            </div>
+                            <span class="text-green-600 font-semibold">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settingsTab" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Personal Information -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Personal Information</h3>
+                    <form id="profileForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                            <input type="email" id="emailAddress" name="emailAddress" readonly
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                            <textarea id="userBio" name="bio" rows="3" 
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                      placeholder="Tell us about your reading interests..."></textarea>
+                        </div>
+                        
+                        <button type="submit" 
+                                class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                            Update Profile
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Reading Preferences -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Reading Preferences</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Favorite Genres</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="rounded text-blue-600 focus:ring-blue-500" value="Fiction">
+                                    <span class="ml-2 text-sm">Fiction</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="rounded text-blue-600 focus:ring-blue-500" value="Business">
+                                    <span class="ml-2 text-sm">Business</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="rounded text-blue-600 focus:ring-blue-500" value="Self Help">
+                                    <span class="ml-2 text-sm">Self Help</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="rounded text-blue-600 focus:ring-blue-500" value="Technology">
+                                    <span class="ml-2 text-sm">Technology</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Reading Goal (books per month)</label>
+                            <select id="readingGoal" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="1">1 book</option>
+                                <option value="2">2 books</option>
+                                <option value="3">3 books</option>
+                                <option value="4">4 books</option>
+                                <option value="5">5+ books</option>
+                            </select>
+                        </div>
+                        
+                        <button onclick="savePreferences()" 
+                                class="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                            Save Preferences
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Actions -->
+            <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Account Actions</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="exportData()" 
+                            class="bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                        📄 Export Data
+                    </button>
+                    <button onclick="resetPassword()" 
+                            class="bg-yellow-500 text-black py-3 px-4 rounded-lg hover:bg-yellow-400 transition-colors">
+                        🔑 Reset Password
+                    </button>
+                    <button onclick="deleteAccount()" 
+                            class="bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition-colors">
+                        🗑️ Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-display font-bold mb-2">
+                        <span class="gradient-text">CLIQ</span> BOOK
+                    </h3>
+                    <p class="text-gray-400">Made by CLIQSER</p>
+                </div>
+                
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    Empowering readers worldwide with access to quality literature and knowledge. 
+                    Join our community of passionate learners and discover your next favorite book.
+                </p>
+                
+                <div class="border-t border-gray-700 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2024 CLIQ BOOK by CLIQSER. All rights reserved. | Read. Learn. Grow.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript -->
+    <script src="main.js"></script>
+    
+    <script>
+        // Profile page specific functionality
+        let currentTab = 'reading';
+        let userStats = {
+            booksRead: 0,
+            readingHours: 0,
+            bookmarksCount: 0,
+            favoriteCategory: 'Fiction'
+        };
+        
+        function initProfilePage() {
+            // Check if user is logged in
+            if (!AppState.currentUser) {
+                Utils.showNotification('Please login to view your profile', 'error');
+                setTimeout(() => {
+                    window.location.href = 'login.html?redirect=profile';
+                }, 2000);
+                return;
+            }
+            
+            // Load user profile
+            loadUserProfile();
+            
+            // Load user statistics
+            loadUserStats();
+            
+            // Load reading history
+            loadReadingHistory();
+            
+            // Load bookmarks
+            loadUserBookmarks();
+            
+            // Initialize scroll animations
+            initScrollAnimations();
+            
+            // Setup form handlers
+            setupFormHandlers();
+        }
+        
+        function loadUserProfile() {
+            const user = AppState.currentUser;
+            
+            document.getElementById('profileName').textContent = user.name;
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('profileAvatar').src = user.avatar || 'https://via.placeholder.com/150';
+            
+            // Update form fields
+            document.getElementById('fullName').value = user.name;
+            document.getElementById('emailAddress').value = user.email;
+            document.getElementById('userBio').value = user.bio || '';
+            
+            // Update membership badge
+            const membershipBadge = document.getElementById('membershipBadge');
+            if (user.membership === 'premium') {
+                membershipBadge.textContent = 'Premium Member';
+                membershipBadge.className = 'bg-yellow-500 text-black px-4 py-2 rounded-full font-semibold';
+            } else {
+                membershipBadge.textContent = 'Free Member';
+                membershipBadge.className = 'bg-gray-500 text-white px-4 py-2 rounded-full font-semibold';
+            }
+            
+            // Update join date
+            const joinDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Recently';
+            document.getElementById('joinDate').textContent = joinDate;
+        }
+        
+        function loadUserStats() {
+            // Calculate statistics from user's reading history
+            const readingHistory = AppState.currentUser.readingHistory || [];
+            const bookmarks = AppState.currentUser.bookmarks || [];
+            
+            userStats.booksRead = readingHistory.length;
+            userStats.readingHours = Math.floor(readingHistory.length * 8); // Assume 8 hours per book
+            userStats.bookmarksCount = bookmarks.length;
+            
+            // Calculate favorite category
+            const categoryCount = {};
+            readingHistory.forEach(item => {
+                const book = AppState.books.find(b => b.id === item.bookId);
+                if (book) {
+                    categoryCount[book.category] = (categoryCount[book.category] || 0) + 1;
+                }
+            });
+            
+            if (Object.keys(categoryCount).length > 0) {
+                userStats.favoriteCategory = Object.keys(categoryCount).reduce((a, b) => 
+                    categoryCount[a] > categoryCount[b] ? a : b
+                );
+            }
+            
+            // Update UI
+            document.getElementById('booksRead').textContent = userStats.booksRead;
+            document.getElementById('readingHours').textContent = userStats.readingHours;
+            document.getElementById('bookmarksCount').textContent = userStats.bookmarksCount;
+            document.getElementById('favoriteCategory').textContent = userStats.favoriteCategory;
+            
+            // Update progress circle
+            updateProgressCircle();
+        }
+        
+        function updateProgressCircle() {
+            const progress = Math.min((userStats.booksRead / 4) * 100, 100); // Goal: 4 books per month
+            const circumference = 2 * Math.PI * 52;
+            const offset = circumference - (progress / 100) * circumference;
+            
+            document.getElementById('progressCircle').style.strokeDashoffset = offset;
+            document.getElementById('progressPercentage').textContent = Math.round(progress) + '%';
+        }
+        
+        function loadReadingHistory() {
+            const readingHistory = AppState.currentUser.readingHistory || [];
+            const recentBooksContainer = document.getElementById('recentBooks');
+            
+            if (readingHistory.length === 0) {
+                recentBooksContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">📚</div>
+                        <p>No reading history yet. Start reading your first book!</p>
+                        <button onclick="window.location.href='library.html'" 
+                                class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Browse Books
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Get recent books (last 5)
+            const recentBooks = readingHistory
+                .sort((a, b) => new Date(b.lastRead) - new Date(a.lastRead))
+                .slice(0, 5);
+            
+            recentBooksContainer.innerHTML = recentBooks.map(item => {
+                const book = AppState.books.find(b => b.id === item.bookId);
+                if (!book) return '';
+                
+                const progress = Math.round(item.progress || 0);
+                
+                return `
+                    <div class="book-item flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                        <img src="${book.cover}" alt="${book.title}" 
+                             class="w-16 h-20 object-cover rounded"
+                             onerror="this.src='https://via.placeholder.com/256x384.png?text=No+Cover'">
+                        
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-800 mb-1">${book.title}</h4>
+                            <p class="text-sm text-gray-600 mb-2">by ${book.author}</p>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex-1">
+                                    <div class="reading-progress">
+                                        <div class="reading-progress-fill" style="width: ${progress}%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">${progress}% complete</p>
+                                </div>
+                                <button onclick="continueReading('${book.id}')" 
+                                        class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
+                                    Continue
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function loadUserBookmarks() {
+            const bookmarks = AppState.currentUser.bookmarks || [];
+            const allBookmarksContainer = document.getElementById('allBookmarks');
+            
+            if (bookmarks.length === 0) {
+                allBookmarksContainer.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">🔖</div>
+                        <p>No bookmarks yet. Start bookmarking your favorite pages!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            allBookmarksContainer.innerHTML = bookmarks.map(bookmark => {
+                const book = AppState.books.find(b => b.id === bookmark.bookId);
+                if (!book) return '';
+                
+                return `
+                    <div class="book-item bg-gray-50 rounded-lg p-4">
+                        <img src="${book.cover}" alt="${book.title}" 
+                             class="w-full h-32 object-cover rounded mb-3"
+                             onerror="this.src='https://via.placeholder.com/256x384.png?text=No+Cover'">
+                        
+                        <h4 class="font-bold text-gray-800 mb-1">${book.title}</h4>
+                        <p class="text-sm text-gray-600 mb-2">Page ${bookmark.page} of ${bookmark.totalPages}</p>
+                        <p class="text-xs text-gray-500 mb-3">${bookmark.note}</p>
+                        
+                        <div class="flex space-x-2">
+                            <button onclick="continueReading('${book.id}')" 
+                                    class="flex-1 bg-blue-600 text-white py-2 px-3 rounded text-sm hover:bg-blue-700 transition-colors">
+                                Continue
+                            </button>
+                            <button onclick="removeBookmark('${bookmark.id}')" 
+                                    class="bg-red-600 text-white py-2 px-3 rounded text-sm hover:bg-red-700 transition-colors">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function loadSubscriptionDetails() {
+            const user = AppState.currentUser;
+            const currentPlanContainer = document.getElementById('currentPlan');
+            
+            if (user.membership === 'premium') {
+                currentPlanContainer.innerHTML = `
+                    <div class="text-6xl mb-4">👑</div>
+                    <h4 class="text-xl font-bold text-gray-800 mb-2">Premium Membership</h4>
+                    <p class="text-gray-600 mb-4">Unlimited access to all books</p>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <p>✓ Unlimited book access</p>
+                        <p>✓ Offline reading</p>
+                        <p>✓ No advertisements</p>
+                        <p>✓ Priority support</p>
+                    </div>
+                `;
+            } else {
+                currentPlanContainer.innerHTML = `
+                    <div class="text-6xl mb-4">📖</div>
+                    <h4 class="text-xl font-bold text-gray-800 mb-2">Free Plan</h4>
+                    <p class="text-gray-600 mb-4">Access to free books and previews</p>
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <p>✓ Free books access</p>
+                        <p>✓ Limited previews</p>
+                        <p>✓ Basic search</p>
+                        <p>✓ Community features</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentTab = tabName;
+            
+            // Load tab-specific content
+            switch (tabName) {
+                case 'bookmarks':
+                    loadUserBookmarks();
+                    break;
+                case 'subscription':
+                    loadSubscriptionDetails();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+        
+        function continueReading(bookId) {
+            window.location.href = `reader.html?book=${bookId}`;
+        }
+        
+        function removeBookmark(bookmarkId) {
+            if (confirm('Remove this bookmark?')) {
+                let bookmarks = AppState.currentUser.bookmarks || [];
+                const updatedBookmarks = bookmarks.filter(b => b.id !== bookmarkId);
+                AppState.currentUser.bookmarks = updatedBookmarks;
+                localStorage.setItem('cliqbook_user', JSON.stringify(AppState.currentUser));
+                
+                Utils.showNotification('Bookmark removed', 'success');
+                loadUserBookmarks();
+            }
+        }
+        
+        function setupFormHandlers() {
+            // Profile form
+            document.getElementById('profileForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData(e.target);
+                const updatedUser = {
+                    ...AppState.currentUser,
+                    name: formData.get('fullName'),
+                    bio: formData.get('bio')
+                };
+                
+                // Update user data
+                AppState.currentUser = updatedUser;
+                localStorage.setItem('cliqbook_user', JSON.stringify(updatedUser));
+                
+                // Update UI
+                loadUserProfile();
+                
+                Utils.showNotification('Profile updated successfully!', 'success');
+            });
+        }
+        
+        function savePreferences() {
+            const preferences = {
+                favoriteGenres: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value),
+                readingGoal: document.getElementById('readingGoal').value
+            };
+            
+            // Save to user data
+            AppState.currentUser.preferences = preferences;
+            localStorage.setItem('cliqbook_user', JSON.stringify(AppState.currentUser));
+            
+            Utils.showNotification('Preferences saved!', 'success');
+        }
+        
+        function loadSettings() {
+            // Load current preferences
+            const preferences = AppState.currentUser.preferences || {};
+            
+            // Check favorite genres
+            if (preferences.favoriteGenres) {
+                preferences.favoriteGenres.forEach(genre => {
+                    const checkbox = document.querySelector(`input[type="checkbox"][value="${genre}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+            
+            // Set reading goal
+            if (preferences.readingGoal) {
+                document.getElementById('readingGoal').value = preferences.readingGoal;
+            }
+        }
+        
+        function exportData() {
+            const userData = {
+                profile: AppState.currentUser,
+                readingHistory: AppState.currentUser.readingHistory || [],
+                bookmarks: AppState.currentUser.bookmarks || [],
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(userData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `cliqbook-data-${AppState.currentUser.name.replace(/\s+/g, '-')}.json`;
+            link.click();
+            
+            Utils.showNotification('Data exported successfully!', 'success');
+        }
+        
+        function resetPassword() {
+            Utils.showNotification('Password reset email sent!', 'info');
+        }
+        
+        function deleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                Utils.showNotification('Account deletion feature coming soon!', 'info');
+            }
+        }
+        
+        function initScrollAnimations() {
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            revealElements.forEach(el => revealObserver.observe(el));
+        }
+        
+        // Initialize profile page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Small delay to ensure main.js is fully loaded
+            setTimeout(initProfilePage, 100);
+        });
+    </script>
+</body>
+</html>
